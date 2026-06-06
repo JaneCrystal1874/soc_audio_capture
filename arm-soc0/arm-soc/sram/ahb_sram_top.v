@@ -1,0 +1,66 @@
+// ----------------------------------------------------------------------------
+//
+// $Date: 2018-04-11$
+// FILE NAME	:ahb2sramtop
+// FUNCTION	:TOP
+//
+// ----------------------------------------------------------------------------
+module ahb_sram_top(
+
+// ----------------------------------------------------------------------------
+// Port Definitions
+// ----------------------------------------------------------------------------
+// AHB Inputs
+  input  wire          HCLK,      // system bus clock
+  input  wire          HRESETn,   // system bus reset
+  input  wire          HSEL,      // AHB peripheral select
+  input  wire          HREADY,    // AHB ready input
+  input  wire    [1:0] HTRANS,    // AHB transfer type
+  input  wire    [2:0] HSIZE,     // AHB hsize
+  input  wire          HWRITE,    // AHB hwrite
+  input  wire   [15:0] HADDR,     // AHB address bus
+  input  wire   [31:0] HWDATA,    // AHB write data bus 
+// AHB Outputs
+  output wire          HREADYOUT, // AHB ready output to S->M mux
+  output wire          HRESP,     // AHB response
+  output wire   [31:0] HRDATA);   // AHB read data bus
+//Internal wires
+  wire   [31:0] SRAMRDATA;
+  wire   [13:0] SRAMADDR;  // SRAM address
+  wire    [3:0] SRAMWEN;   // SRAM write enable (active high)
+  wire   [31:0] SRAMWDATA;		
+  
+	
+  ahb_to_sram    h2s(
+  	//Inputs
+        .HCLK(HCLK),  
+        .HRESETn(HRESETn),  
+        .HSEL(HSEL),     
+        .HREADY(HREADY),  
+        .HTRANS(HTRANS),   
+        .HSIZE(HSIZE),    
+        .HWRITE(HWRITE),   
+        .HADDR(HADDR),     
+        .HWDATA(HWDATA),
+	.SRAMRDATA(SRAMRDATA),
+	//Outputs
+	.HREADYOUT(HREADYOUT),
+	.HRESP(HRESP),
+	.HRDATA(HRDATA),
+	.SRAMWEN(SRAMWEN),
+	.SRAMWDATA(SRAMWDATA),
+	.SRAMADDR(SRAMADDR));
+	
+
+  ram16x32   sram(
+	//Inputs
+	.aclr(~HRESETn),
+	.address(SRAMADDR),
+	.byteena(SRAMWEN),
+	.clock(HCLK),
+	.data(SRAMWDATA),
+	.wren(|SRAMWEN),
+	//Output
+	.q(SRAMRDATA));
+
+endmodule

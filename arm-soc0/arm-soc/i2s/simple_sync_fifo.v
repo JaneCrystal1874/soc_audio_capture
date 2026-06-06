@@ -1,0 +1,71 @@
+`timescale 1ns/1ns
+
+module simple_sync_fifo #(
+    parameter DATA_WIDTH = 32,
+    parameter ADDR_WIDTH = 8
+) (
+    input  wire                  clk,
+    input  wire                  resetn,
+    input  wire                  clear,
+
+    input  wire                  wr_en,
+    input  wire [DATA_WIDTH-1:0] wr_data,
+    output wire                  full,
+    output wire                  almost_full,
+
+    input  wire                  rd_en,
+    output wire [DATA_WIDTH-1:0] rd_data,
+    output wire                  empty,
+    output wire                  almost_empty,
+    output wire [ADDR_WIDTH:0]   level,
+    input  wire                  overflow_clear,
+    output reg                   overflow
+);
+
+    localparam DEPTH = (1 << ADDR_WIDTH);
+    localparam [ADDR_WIDTH:0] DEPTH_VALUE = (1 << ADDR_WIDTH);
+
+    reg [DATA_WIDTH-1:0] mem [0:DEPTH-1];
+    reg [ADDR_WIDTH:0] wr_ptr;
+    reg [ADDR_WIDTH:0] rd_ptr;
+
+    wire [ADDR_WIDTH:0] used = wr_ptr - rd_ptr;
+
+    assign level        = used;
+    assign empty        = (used == 0);
+    assign full         = (used == DEPTH_VALUE);
+    assign almost_empty = (used <= 1);
+    assign almost_full  = (used >= (DEPTH - 2));
+    assign rd_data      = mem[rd_ptr[ADDR_WIDTH-1:0]];
+
+    always @(posedge clk or negedge resetn) begin
+        if (!resetn) begin
+			  wr_ptr   <= {ADDR_WIDTH+1{1'b0}};
+			  rd_ptr   <= {ADDR_WIDTH+1{1'b0}};
+			  overflow <= 1'b0;
+		  end
+		  else if (clear) begin
+			  wr_ptr   <= {ADDR_WIDTH+1{1'b0}};
+			  rd_ptr   <= {ADDR_WIDTH+1{1'b0}};
+			  overflow <= 1'b0;
+		  end else begin
+						if (overflow_clear) begin
+                overflow <= 1'b0;
+            end
+
+            if (wr_en) begin
+                if (!full) begin
+                    mem[wr_ptr[ADDR_WIDTH-1:0]] <= wr_data;
+                    wr_ptr <= wr_ptr + 1'b1;
+                end else begin
+                    overflow <= 1'b1;
+                end
+            end
+
+            if (rd_en && !empty) begin
+                rd_ptr <= rd_ptr + 1'b1;
+            end
+        end
+    end
+
+endmodule

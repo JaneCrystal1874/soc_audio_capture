@@ -1,0 +1,3 @@
+[submodule "ima_adpcm_enc_dec"]
+	path = ima_adpcm_enc_dec
+	url = https://github.com/freecores/ima_adpcm_enc_dec.git

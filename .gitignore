@@ -1,0 +1,73 @@
+# OS/editor noise
+Thumbs.db
+Desktop.ini
+*~
+*.swp
+*.swo
+__pycache__/
+*.py[cod]
+
+# Local archives/backups kept outside Git history
+*.zip
+
+# ModelSim/Questa generated files
+work/
+*/work/
+modelsim.ini
+transcript
+*.wlf
+*.vstf
+*.mpf
+*.mti
+*.cr.mti
+
+# Quartus generated databases and reports
+db/
+*/db/
+greybox_tmp/
+.qsys_edit/
+quartus/db/
+quartus0/quartus/db/
+quartus/incremental_db/
+quartus0/quartus/incremental_db/
+quartus/output_files/
+quartus0/quartus/output_files/
+quartus/unsaved/
+quartus0/quartus/unsaved/
+*.rpt
+*.summary
+*.smsg
+*.qmsg
+*.done
+*.jdi
+*.pin
+*.sld
+*.sof
+*.pof
+*.cdf
+*.qws
+
+# Keil/IAR generated files
+firmware/prj/keil/Objects/
+firmware/prj/keil/Listings/
+firmware/prj/iar/Debug/
+*.o
+*.d
+*.crf
+*.axf
+*.htm
+*.lnp
+*.map
+*.dep
+*.out
+*.pbi
+*.pbd
+*.browse
+*.uvguix.*
+JLinkLog.txt
+JLinkSettings.ini
+
+# Captured/generated audio data
+*.wav
+*.hex
+*.bin
